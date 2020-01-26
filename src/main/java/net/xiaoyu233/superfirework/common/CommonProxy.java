@@ -18,13 +18,13 @@ import net.xiaoyu233.superfirework.item.ItemLoader;
 
 import static net.xiaoyu233.superfirework.item.ItemSuperFirework.getRandomFireworkTag;
 
-public class ServerProxy
+public class CommonProxy
 {
 
     public void preInit(FMLPreInitializationEvent event) {
         EntityLoader.registerEntities();
+        ItemLoader.preInit();
         registerDispenser();
-        MinecraftForge.EVENT_BUS.register(ItemLoader.class);
     }
 
     private void registerDispenser(){

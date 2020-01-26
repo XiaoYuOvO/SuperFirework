@@ -61,17 +61,20 @@ public class EntitySuperFirework extends EntityFireworkRocket {
     @Override
     public void dealExplosionDamage() {
         super.dealExplosionDamage();
-        int lifeTime = 10 + rand.nextInt(5);
-        double motionX = -0.5d;
-        while (motionX < 0.6d) {
-            double motionZ = -0.5d;
-            while (motionZ < 0.6d) {
-                EntitySubFirework subFirework = new EntitySubFirework(this.world,this.posX,this.posY,this.posZ,this.dataManager.get(FIREWORK_ITEM)).setLifetime(lifeTime);
-                subFirework.setVelocity(motionX,1,motionZ);
-                this.world.spawnEntity(subFirework);
-                motionZ += 1d;
+        if (this.isClone()) {
+            int lifeTime = 10 + rand.nextInt(5);
+            double motionX = -0.5d;
+            while (motionX < 0.6d) {
+                double motionZ = -0.5d;
+                while (motionZ < 0.6d) {
+                    EntitySubFirework subFirework = new EntitySubFirework(this.world, this.posX, this.posY, this.posZ,
+                            this.dataManager.get(FIREWORK_ITEM)).setLifetime(lifeTime);
+                    subFirework.setVelocity(motionX, 1, motionZ);
+                    this.world.spawnEntity(subFirework);
+                    motionZ += 1d;
+                }
+                motionX += 1d;
             }
-            motionX += 1d;
         }
     }
 

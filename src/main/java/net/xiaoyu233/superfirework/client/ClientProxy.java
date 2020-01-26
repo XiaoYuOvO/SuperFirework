@@ -3,11 +3,11 @@ package net.xiaoyu233.superfirework.client;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.xiaoyu233.superfirework.common.ServerProxy;
+import net.xiaoyu233.superfirework.common.CommonProxy;
 import net.xiaoyu233.superfirework.entity.EntityLoader;
 import net.xiaoyu233.superfirework.item.ItemLoader;
 
-public class ClientProxy extends ServerProxy
+public class ClientProxy extends CommonProxy
 {
     @Override
     public void preInit(FMLPreInitializationEvent event) {

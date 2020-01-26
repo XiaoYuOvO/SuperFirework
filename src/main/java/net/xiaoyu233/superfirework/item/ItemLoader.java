@@ -2,52 +2,38 @@ package net.xiaoyu233.superfirework.item;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opencl.CL;
+import net.xiaoyu233.superfirework.SuperFirework;
 
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 public class ItemLoader {
-    private static final ArrayList<Item> ITEMS = Lists.newArrayList();
-    public static final Item SUPER_FIREWORK = new ItemSuperFirework();
-    public static final Item CLONE_FIREWORK = new ItemCloneFirework();
+    public static final ItemSuperFirework SUPER_FIREWORK = new ItemSuperFirework();
+    public static final ItemCloneFirework CLONE_FIREWORK = new ItemCloneFirework();
 
-    static {
-        register("super_firework",SUPER_FIREWORK);
+    public static void preInit() {
         register("clone_firework",CLONE_FIREWORK);
+        register("super_firework",SUPER_FIREWORK);
     }
 
-    private static void register(String registerName,Item item){
-        item.setRegistryName("superfirework",registerName);
-        item.setTranslationKey(registerName);
-        ITEMS.add(item);
-    }
-
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
-        for (Item item : ITEMS) {
-            event.getRegistry().register(item);
-        }
+    private static <T extends Item> void register(String registerName,T item){
+        ForgeRegistries.ITEMS.register(item.setRegistryName(registerName).setTranslationKey(registerName));
     }
 
     @SideOnly(Side.CLIENT)
     public static void registerRenders(){
-        registerRender(SUPER_FIREWORK);
-        registerRender(CLONE_FIREWORK);
+        ModelLoader.setCustomModelResourceLocation(SUPER_FIREWORK, 0, new ModelResourceLocation(new ResourceLocation(SuperFirework.MODID,"super_firework"), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(CLONE_FIREWORK, 0, new ModelResourceLocation(new ResourceLocation(SuperFirework.MODID,"clone_firework"), "inventory"));
     }
 
-    @SideOnly(Side.CLIENT)
-    private static void registerRender(Item item) {
-        if (item.getRegistryName() != null) {
-            ModelResourceLocation model = new ModelResourceLocation(item.getRegistryName(), "inventory");
-            ModelLoader.setCustomModelResourceLocation(item, 0, model);
-        }
-    }
+
+
+
 }
