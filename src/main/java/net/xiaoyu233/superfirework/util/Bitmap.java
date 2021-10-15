@@ -1,5 +1,6 @@
 package net.xiaoyu233.superfirework.util;
 
+import com.google.common.base.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.xiaoyu233.superfirework.SuperFirework;
@@ -83,13 +84,27 @@ public class Bitmap {
     }
 
     private static class ResizeConfig{
-        private BufferedImage src;
-        private int maxWidth,maxHeight;
+        private final BufferedImage src;
+        private final int maxWidth;
+        private final int maxHeight;
 
         private ResizeConfig(BufferedImage src, int maxWidth, int maxHeight) {
             this.src = src;
             this.maxWidth = maxWidth;
             this.maxHeight = maxHeight;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ResizeConfig that = (ResizeConfig) o;
+            return maxWidth == that.maxWidth && maxHeight == that.maxHeight && Objects.equal(src, that.src);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(src, maxWidth, maxHeight);
         }
     }
 

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.FireworkRocketItem;
@@ -19,7 +18,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.xiaoyu233.superfirework.item.SuperFireworkItem;
@@ -323,7 +321,7 @@ public class SuperFireworkParticle extends FireworkParticle {
                                     {0.0D, -0.4D}}, aint, aint1, flag4, flag2, true);
                         }
                         break;
-                    case FONT:
+                    case TEXT:
                         double rotation = 0;
                         String font = "Default";
                         if (compoundnbt1.contains("Rotation")){

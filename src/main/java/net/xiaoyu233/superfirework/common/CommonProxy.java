@@ -61,13 +61,6 @@ public class CommonProxy
                 stack.shrink(1);
                 return stack;
             }
-            /**
-             * Play the dispense sound from the specified block.
-             */
-            protected void playDispenseSound(IBlockSource source)
-            {
-                source.getWorld().playEvent(1004, source.getBlockPos(), 0);
-            }
         });
     }
 }
