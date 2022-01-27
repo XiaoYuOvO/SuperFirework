@@ -3,10 +3,14 @@ package net.xiaoyu233.superfirework.util;
 import com.google.common.base.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.ResourceLocationException;
 import net.xiaoyu233.superfirework.SuperFirework;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,18 +35,19 @@ public class Bitmap {
             try {
                 InputStream inputStream = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(SuperFirework.MODID,"fonts/" + fontName +".ttf")).getInputStream();
                 font = getSelfDefinedFont(inputStream);
-            } catch (IOException e) {
+            } catch (IOException | ResourceLocationException e) {
                 font = new Font(fontName, fontStyle, fontSize);
             }
             fontCache.put(fontName, font);
         }
-        BufferedImage bi = new BufferedImage(fontSize * 8, fontSize * 50, BufferedImage.TYPE_INT_RGB);
+        Rectangle2D stringBounds = font.getStringBounds(s, new FontRenderContext(null, false, false));
+        int strHeight = (int) stringBounds.getHeight();
+        int strWidth = (int) stringBounds.getWidth();
+        BufferedImage bi = new BufferedImage(strWidth, strHeight, BufferedImage.TYPE_INT_RGB);
         Graphics g = bi.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
         g2d.setFont(font);
         FontMetrics fm = g2d.getFontMetrics();
-        int strHeight = fm.getAscent() + fm.getDescent() - 3;
-        int strWidth = fm.stringWidth(s);
         g2d.drawString(s, 0, fm.getAscent() - fm.getLeading() - 1);
         boolean[][] b = new boolean[strHeight][strWidth];
         for (int y = 0; y < strHeight; y++) {

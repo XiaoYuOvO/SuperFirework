@@ -91,7 +91,7 @@ public class SuperFireworkItem extends FireworkRocketItem {
         TEXT(8,"text"),
         IMAGE(9,"image");
 
-        private static final SuperFireworkItem.Shape[] VALUES = Arrays.stream(values()).filter(shape -> shape.ordinal() < CUSTOM_SHAPE.ordinal()).sorted(Comparator.comparingInt((p_199796_0_) -> p_199796_0_.index)).toArray(Shape[]::new);
+        private static final SuperFireworkItem.Shape[] VALUES = Arrays.stream(values()).sorted(Comparator.comparingInt((p_199796_0_) -> p_199796_0_.index)).toArray(Shape[]::new);
         private final int index;
         private final String shapeName;
 

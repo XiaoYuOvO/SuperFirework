@@ -37,7 +37,7 @@ public class ParticleManagerTrans extends ParticleManager {
         Particle particle;
         if (!this.queue.isEmpty()) {
             while((particle = this.queue.poll()) != null) {
-                this.byType.computeIfAbsent(particle.getRenderType(), (renderType) -> EvictingQueue.create(Integer.MAX_VALUE)).add(particle);
+                this.byType.computeIfAbsent(particle.getRenderType(), (renderType) -> EvictingQueue.create(32768)).add(particle);
             }
         }
 

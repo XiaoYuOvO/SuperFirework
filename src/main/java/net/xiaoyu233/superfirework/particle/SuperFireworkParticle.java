@@ -633,7 +633,7 @@ public class SuperFireworkParticle extends FireworkParticle {
                     double vecX = speed;
                     for (boolean bit : aLine) {
                         if (bit){
-                            this.createParticle(this.posX, this.posY, this.posZ, vecX, vecY, vecX*MathHelper.cos((float) radRotation), colours, fadeColours, trail, twinkleIn);
+                            this.createParticle(this.posX, this.posY, this.posZ, vecX * 2, vecY, vecX*MathHelper.cos((float) radRotation), colours, fadeColours, trail, twinkleIn);
                         }
                         vecX-=xStep;
                     }
