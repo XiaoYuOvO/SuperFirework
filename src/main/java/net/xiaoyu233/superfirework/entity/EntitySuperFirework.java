@@ -1,11 +1,8 @@
 package net.xiaoyu233.superfirework.entity;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFirework;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
@@ -17,7 +14,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.xiaoyu233.superfirework.item.ItemSuperFirework;
 import net.xiaoyu233.superfirework.particle.ParticleSuperFirework;
-import org.lwjgl.opencl.CL;
 
 import static net.xiaoyu233.superfirework.item.ItemSuperFirework.getRandomColor;
 
@@ -67,8 +63,8 @@ public class EntitySuperFirework extends EntityFireworkRocket {
             while (motionX < 0.6d) {
                 double motionZ = -0.5d;
                 while (motionZ < 0.6d) {
-                    EntitySubFirework subFirework = new EntitySubFirework(this.world, this.posX, this.posY, this.posZ,
-                            this.dataManager.get(FIREWORK_ITEM)).setLifetime(lifeTime);
+                    SubFireworkEntity subFirework = new SubFireworkEntity(this.world, this.posX, this.posY, this.posZ, this.dataManager.get(FIREWORK_ITEM)).setLifetime(lifeTime);
+
                     subFirework.setVelocity(motionX, 1, motionZ);
                     this.world.spawnEntity(subFirework);
                     motionZ += 1d;
@@ -118,7 +114,7 @@ public class EntitySuperFirework extends EntityFireworkRocket {
                     fireworkTag.setInteger("Size",rand.nextInt(15));
                 }
                 if (!fireworkTag.hasKey("Type")){
-                    fireworkTag.setInteger("Type",rand.nextInt(ParticleSuperFirework.TYPES));
+                    fireworkTag.setInteger("Type",rand.nextInt(ParticleSuperFirework.FireworkShape.values().length));
                 }
                 if (!fireworkTag.hasKey("Colors")){
                     fireworkTag.setTag("Colors",new NBTTagIntArray(new int[]{getRandomColor(rand)}));

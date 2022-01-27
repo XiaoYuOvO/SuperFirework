@@ -14,7 +14,7 @@ public class SuperFirework
 {
     public static final String MODID = "superfirework";
     public static final String NAME = "Super Firework";
-    public static final String VERSION = "1.2";
+    public static final String VERSION = "0.1.2";
     @SidedProxy(clientSide = "net.xiaoyu233.superfirework.client.ClientProxy",
             serverSide = "net.xiaoyu233.superfirework.common.ServerProxy")
     public static CommonProxy proxy;

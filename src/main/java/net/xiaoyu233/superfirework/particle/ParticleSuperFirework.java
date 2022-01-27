@@ -8,7 +8,9 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemDye;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -16,8 +18,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.xiaoyu233.superfirework.util.Bitmap;
 
 import javax.annotation.Nullable;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 @SideOnly(Side.CLIENT)
 public class ParticleSuperFirework extends ParticleFirework {
@@ -192,7 +197,7 @@ public class ParticleSuperFirework extends ParticleFirework {
         /**
          * Creates a creeper-shaped or star-shaped explosion.
          */
-        private void createShaped(double speed, int size,double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn, boolean p_92038_8_) {
+        private void createMirroredShaped(double speed, int size,double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn, boolean p_92038_8_) {
             double d0 = shape[0][0];
             double d1 = shape[0][1];
             this.createParticle(this.posX, this.posY, this.posZ, d0 * speed, d1 * speed, 0.0D, colours, fadeColours,
@@ -229,6 +234,66 @@ public class ParticleSuperFirework extends ParticleFirework {
                 }
             }
         }
+
+        private void createShaped(double speed, int size,double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn, boolean p_92038_8_) {
+            double d0 = shape[0][0];
+            double d1 = shape[0][1];
+            this.createParticle(this.posX, this.posY, this.posZ, d0 * speed, d1 * speed, 0.0D, colours, fadeColours,
+                    trail, twinkleIn);
+            float f = 1 * (float) Math.PI;
+            double d2 = p_92038_8_ ? 0.034D : 0.34D;
+
+            for (int i = 0; i < 3; ++i) {
+                double d3 = (double) f + (double) ((float) i * (float) Math.PI) * d2;
+                double d4 = d0;
+                double d5 = d1;
+
+                for (int j = 1; j < shape.length; ++j) {
+                    double d6 = shape[j][0];
+                    double d7 = shape[j][1];
+
+                    for (double d8 = 0.25D; d8 <= 1.0D; d8 += 0.25D) {
+                        double d9 = (d4 + (d6 - d4) * d8) * speed;
+                        double d10 = (d5 + (d7 - d5) * d8) * speed;
+                        double d11 = d9 * Math.sin(d3);
+                        d9 = d9 * Math.cos(d3);
+
+                        double plus = 2.0d/size;
+                        for (double d12 = -1.0D; d12 <= 1.0D; d12 += plus) {
+                            this.createParticle(this.posX, this.posY, this.posZ, d9, d10, d11, colours,
+                                    fadeColours, trail, twinkleIn);
+                            this.createParticle(this.posX, this.posY, this.posZ, d9 * 1, d10, d11 * 1, colours,
+                                    fadeColours, trail, twinkleIn);
+                        }
+                    }
+
+                    d4 = d6;
+                    d5 = d7;
+                }
+            }
+        }
+
+        private void createString(double speed, int size,String content, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn, boolean p_92038_8_) {
+            boolean[][] bitmap = Bitmap.getStringPixels("Default", 0, Math.max(size,4), content);
+            if (bitmap.length != 0){
+                double yStep = speed * 2 / bitmap.length;
+                double xStep = speed * 2 / bitmap[0].length;
+
+                double vecY = speed;
+                for (boolean[] booleans : bitmap) {
+                    double vecX = speed;
+                    for (boolean aBoolean : booleans) {
+                        if (aBoolean){
+                            this.createParticle(this.posX, this.posY, this.posZ, vecX, vecY, 0, colours,
+                                    fadeColours, trail, twinkleIn);
+                        }
+                        vecX-=xStep;
+                    }
+                    vecY-=yStep;
+                }
+            }
+        }
+
 
         private boolean isFarFromCamera() {
             Minecraft minecraft = Minecraft.getMinecraft();
@@ -286,44 +351,119 @@ public class ParticleSuperFirework extends ParticleFirework {
                 if (aint.length == 0) {
                     aint = new int[] {ItemDye.DYE_COLORS[0]};
                 }
-
-                if (l == 1) {
-                    if ((this.speed == 0d)) {
-                        this.speed = 2d;
-                    }
-                    this.createBall(speed, size, aint, aint1, flag4, flag2);
-                }
-                else if (l == 2) {
-                    if ((this.speed == 0d)) {
-                        this.speed = 0.5d;
-                    }
-                    this.createShaped(speed,size, new double[][] {{0.0D, 1.0D}, {0.3455D, 0.309D}, {0.9511D, 0.309D}, {0.3795918367346939D, -0.12653061224489795D}, {0.6122448979591837D, -0.8040816326530612D}, {0.0D, -0.35918367346938773D}}, aint, aint1, flag4, flag2, false);
-                }
-                else if (l == 3) {
-                    if ((this.speed == 0d)) {
-                        this.speed = 0.5d;
-                    }
-                    this.createShaped(speed, size, new double[][] {{0.0D, 0.2D}, {0.2D, 0.2D}, {0.2D, 0.6D}, {0.6D, 0.6D}, {0.6D, 0.2D}, {0.2D, 0.2D}, {0.2D, 0.0D}, {0.4D, 0.0D}, {0.4D, -0.6D}, {0.2D, -0.6D}, {0.2D, -0.4D}, {0.0D, -0.4D}}, aint, aint1, flag4, flag2, true);
-                }
-                else if (l == 4) {
-                    this.createBurst(aint, aint1, flag4, flag2);
-                } if(l == 5){
-                    if ((this.speed == 0d)) {
-                        this.speed = 2d;
-                    }
-                    this.createBall(speed, size, aint, aint1, flag4, flag2);
-                    this.createBall(speed/2, size, aint, aint1, flag4, flag2);
-                    this.createBall(speed/4, size, aint, aint1, flag4, flag2);
-                }else if (l == 6){
-                    if ((this.speed == 0d)) {
-                        this.speed = 2d;
-                    }
-                    this.createRandomBall(speed, size, aint, aint1, flag4, flag2);
-                } else{
-                    if ((this.speed == 0d)) {
-                        this.speed = 0.25d;
-                    }
-                    this.createBall(speed, size, aint, aint1, flag4, flag2);
+                FireworkShape shape = FireworkShape.values()[MathHelper.clamp(0,l,FireworkShape.values().length)];
+                switch (shape) {
+                    case LARGE_BALL:
+                        if ((this.speed == 0d)) {
+                            this.speed = 2d;
+                        }
+                        this.createBall(speed, size, aint, aint1, flag4, flag2);
+                        break;
+                    case STAR:
+                        if ((this.speed == 0d)) {
+                            this.speed = 0.5d;
+                        }
+                        this.createMirroredShaped(speed, size, new double[][]{
+                                        {0.0D, 1.0D},
+                                        {0.3455D, 0.309D},
+                                        {0.9511D, 0.309D},
+                                        {0.3795918367346939D, -0.12653061224489795D},
+                                        {0.6122448979591837D, -0.8040816326530612D},
+                                        {0.0D, -0.35918367346938773D}},
+                                aint, aint1, flag4, flag2, false);
+                        break;
+                    case CREEPER:
+                        if ((this.speed == 0d)) {
+                            this.speed = 0.5d;
+                        }
+                        this.createMirroredShaped(speed, size, new double[][]{
+                                {0.0D, 0.2D},
+                                {0.2D, 0.2D},
+                                {0.2D, 0.6D},
+                                {0.6D, 0.6D},
+                                {0.6D, 0.2D},
+                                {0.2D, 0.2D},
+                                {0.2D, 0.0D},
+                                {0.4D, 0.0D},
+                                {0.4D, -0.6D},
+                                {0.2D, -0.6D},
+                                {0.2D, -0.4D},
+                                {0.0D, -0.4D}}, aint, aint1, flag4, flag2, true);
+                        break;
+                    case BURST:
+                        this.createBurst(aint, aint1, flag4, flag2);
+                        break;
+                    case TRIPLE_BALL:
+                        if ((this.speed == 0d)) {
+                            this.speed = 2d;
+                        }
+                        this.createBall(speed, size, aint, aint1, flag4, flag2);
+                        this.createBall(speed / 2, size, aint, aint1, flag4, flag2);
+                        this.createBall(speed / 4, size, aint, aint1, flag4, flag2);
+                        break;
+                    case RANDOM_BALL:
+                        if ((this.speed == 0d)) {
+                            this.speed = 2d;
+                        }
+                        this.createRandomBall(speed, size, aint, aint1, flag4, flag2);
+                        break;
+                    case CUSTOM_SHAPE:
+                        if ((this.speed == 0d)) {
+                            this.speed = 2d;
+                        }
+                        double[][] shapeArray = null;
+                        if(nbttagcompound1.hasKey("Shape")){
+                            NBTTagList shapeList = nbttagcompound1.getTagList("Shape", 9);
+                            shapeArray = new double[shapeList.tagCount()][];
+                            int indexA = 0;
+                            for (NBTBase nbtBase : shapeList) {
+                                if (nbtBase instanceof NBTTagList){
+                                    NBTTagList shape2 = (NBTTagList) nbtBase;
+                                    double[] shape2Array = new double[shape2.tagCount()];
+                                    shapeArray[indexA] = shape2Array;
+                                    int indexB = 0;
+                                    for (NBTBase base : shape2) {
+                                        if (base instanceof NBTTagDouble){
+                                            shape2Array[indexB] = ((NBTTagDouble) base).getDouble();
+                                        }
+                                        indexB++;
+                                    }
+                                    indexA++;
+                                }
+                            }
+                        }
+                        if (shapeArray != null){
+                            this.createShaped(speed, size, shapeArray, aint, aint1, flag4, flag2, true);
+                        }else {
+                            this.createShaped(speed, size, new double[][]{
+                                    {0.0D, 0.2D},
+                                    {0.2D, 0.2D},
+                                    {0.2D, 0.6D},
+                                    {0.6D, 0.6D},
+                                    {0.6D, 0.2D},
+                                    {0.2D, 0.2D},
+                                    {0.2D, 0.0D},
+                                    {0.4D, 0.0D},
+                                    {0.4D, -0.6D},
+                                    {0.2D, -0.6D},
+                                    {0.2D, -0.4D},
+                                    {0.0D, -0.4D}}, aint, aint1, flag4, flag2, true);
+                        }
+                        break;
+                    case FONT:
+                        if (nbttagcompound1.hasKey("Content")){
+                            String content = nbttagcompound1.getString("Content");
+                            this.createString(speed,size,content,aint,aint1,flag4,flag2,true);
+                        }else {
+                            this.createString(speed,size,"?",aint,aint1,flag4,flag2,true);
+                        }
+                        break;
+                    default:
+                        if ((this.speed == 0d)) {
+                            this.speed = 0.25d;
+                        }
+                        this.createBall(speed, size, aint, aint1, flag4, flag2);
+                        break;
                 }
 
 //                int j = aint[0];
@@ -363,5 +503,17 @@ public class ParticleSuperFirework extends ParticleFirework {
         public int getFXLayer() {
             return 0;
         }
+    }
+
+    public enum FireworkShape{
+        SMALL_BALL,
+        LARGE_BALL,
+        STAR,
+        CREEPER,
+        BURST,
+        TRIPLE_BALL,
+        RANDOM_BALL,
+        CUSTOM_SHAPE,
+        FONT
     }
 }

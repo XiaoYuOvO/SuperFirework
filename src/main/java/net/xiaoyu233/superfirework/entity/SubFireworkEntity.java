@@ -22,16 +22,16 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.xiaoyu233.superfirework.particle.ParticleSuperFirework;
 
-public class EntitySubFirework extends Entity
+public class SubFireworkEntity extends Entity
 {
     public static final DataParameter<ItemStack> FIREWORK_ITEM = EntityDataManager.createKey(
-            EntitySubFirework.class, DataSerializers.ITEM_STACK);
+            SubFireworkEntity.class, DataSerializers.ITEM_STACK);
     private static final DataParameter<Integer> BOOSTED_ENTITY_ID = EntityDataManager.createKey(
-            EntitySubFirework.class, DataSerializers.VARINT);
+            SubFireworkEntity.class, DataSerializers.VARINT);
     /** The age of the firework in ticks. */
     private int fireworkAge;
 
-    public EntitySubFirework setLifetime(int lifetime) {
+    public SubFireworkEntity setLifetime(int lifetime) {
         this.lifetime = lifetime;
         return this;
     }
@@ -40,7 +40,7 @@ public class EntitySubFirework extends Entity
     private int lifetime;
     private EntityLivingBase boostedEntity;
 
-    public EntitySubFirework(World worldIn)
+    public SubFireworkEntity(World worldIn)
     {
         super(worldIn);
         this.setSize(0.25F, 0.25F);
@@ -67,7 +67,7 @@ public class EntitySubFirework extends Entity
         return super.isInRangeToRender3d(x, y, z) && !this.isAttachedToEntity();
     }
 
-    public EntitySubFirework(World worldIn, double x, double y, double z, ItemStack givenItem)
+    public SubFireworkEntity(World worldIn, double x, double y, double z, ItemStack givenItem)
     {
         super(worldIn);
         this.fireworkAge = 0;
@@ -85,7 +85,7 @@ public class EntitySubFirework extends Entity
         this.lifetime = 10 * i + this.rand.nextInt(6) + this.rand.nextInt(7);
     }
 
-    public EntitySubFirework(World p_i47367_1_, ItemStack p_i47367_2_, EntityLivingBase p_i47367_3_)
+    public SubFireworkEntity(World p_i47367_1_, ItemStack p_i47367_2_, EntityLivingBase p_i47367_3_)
     {
         this(p_i47367_1_, p_i47367_3_.posX, p_i47367_3_.posY, p_i47367_3_.posZ, p_i47367_2_);
         this.dataManager.set(BOOSTED_ENTITY_ID, p_i47367_3_.getEntityId());
