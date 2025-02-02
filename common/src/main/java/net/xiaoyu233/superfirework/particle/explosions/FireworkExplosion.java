@@ -18,7 +18,6 @@ public abstract class FireworkExplosion {
    protected final NbtCompound explosionTag;
    protected final Vec3d parentVec;
 
-    //TODO Extract params to ShapeConfig and ParticleConfig
     protected FireworkExplosion(ParticleManager particleManager, Random random, Vec3d parentVec, double speed, int size, ParticleConfig config, NbtCompound explosionTag) {
         this.particleManager = particleManager;
         this.random = random;
