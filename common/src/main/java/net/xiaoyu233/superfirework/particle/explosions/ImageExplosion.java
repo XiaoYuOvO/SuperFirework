@@ -2,6 +2,7 @@ package net.xiaoyu233.superfirework.particle.explosions;
 
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -17,17 +18,17 @@ public class ImageExplosion extends FireworkExplosion{
 
     public ImageExplosion(ParticleManager particleManager, Random random, Vec3d parentVec, double speed, int size, ParticleConfig config, NbtCompound explosionTag) {
         super(particleManager, random, parentVec, speed, size, config, explosionTag);
-        if (explosionTag.contains("Zoom")){
+        if (explosionTag.contains("Zoom", NbtElement.DOUBLE_TYPE)){
             zoom = MathHelper.clamp(0,explosionTag.getDouble("Zoom"),10);
         }else {
             this.zoom = 1;
         }
-        if (explosionTag.contains("Rotation")){
+        if (explosionTag.contains("Rotation", NbtElement.DOUBLE_TYPE)){
             imageRotation = explosionTag.getDouble("Rotation");
         }else {
             this.imageRotation = 0;
         }
-        if (explosionTag.contains("Name")){
+        if (explosionTag.contains("Name", NbtElement.STRING_TYPE)){
             this.name = explosionTag.getString("Name").toLowerCase();
         }else this.name = "-";
     }

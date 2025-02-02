@@ -27,24 +27,27 @@ public class Bitmap {
 
     @Environment(EnvType.CLIENT)
     public static boolean[][] getStringPixels(String fontName, @MagicConstant(flags = {Font. PLAIN,Font. BOLD,Font. ITALIC})  int fontStyle, int fontSize, String s) {
-        String key = fontName + "_" + fontStyle + "_" + fontSize + "_" + s;
+        String fontKey = fontName + "_" + fontStyle + "_" + fontSize;
+        String key = fontKey + "_" + s;
         Font font;
         if (lettersMap.containsKey(key))
             return lettersMap.get(key);
-        if (fontCache.containsKey(fontName)){
-            font = (fontCache.get(fontName));
+        if (fontCache.containsKey(fontKey)){
+            font = (fontCache.get(fontKey));
         } else {
-            font = MinecraftClient.getInstance()
-                    .getResourceManager()
-                    .getResource(new Identifier(Superfirework.MOD_ID, "fonts/" + fontName.toLowerCase() + ".ttf"))
-                    .map(resource -> {
-                        try {
-                            return getSelfDefinedFont(resource.getInputStream());
-                        } catch (IOException | InvalidIdentifierException e) {
-                            return null;
-                        }
-                    }).orElse(new Font(fontName, fontStyle, fontSize));
-            fontCache.put(fontName, font);
+            if (Identifier.isValid(fontName.toLowerCase())) {
+                font = MinecraftClient.getInstance()
+                        .getResourceManager()
+                        .getResource(new Identifier(Superfirework.MOD_ID, "fonts/" + fontName.toLowerCase() + ".ttf"))
+                        .map(resource -> {
+                            try {
+                                return getSelfDefinedFont(resource.getInputStream(), fontSize);
+                            } catch (IOException | InvalidIdentifierException e) {
+                                return null;
+                            }
+                        }).orElse(new Font(fontName, fontStyle, fontSize).deriveFont(Font.PLAIN, fontSize));
+            }else font = new Font(fontName, fontStyle, fontSize).deriveFont(Font.PLAIN, fontSize);
+            fontCache.put(fontKey, font);
         }
         Rectangle2D stringBounds = font.getStringBounds(s, new FontRenderContext(null, false, false));
         int strHeight = (int) stringBounds.getHeight();
@@ -121,11 +124,11 @@ public class Bitmap {
         }
     }
 
-    private static Font getSelfDefinedFont(InputStream stream){
+    private static Font getSelfDefinedFont(InputStream stream, float fontSize){
         Font font;
         try{
             font = Font.createFont(Font.TRUETYPE_FONT, stream);
-            font = font.deriveFont(Font.PLAIN, 40);
+            font = font.deriveFont(Font.PLAIN, fontSize);
         } catch (FontFormatException | IOException e){
             return null;
         }
