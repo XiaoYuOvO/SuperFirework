@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "superfirework",
+  "version": "${version}",
+  "name": "SuperFirework",
+  "description": "",
+  "authors": [
+    "XiaoYu233"
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/superfirework/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.xiaoyu233.superfirework.fabric.SuperfireworkFabric"
+    ],
+    "client": [
+      "net.xiaoyu233.superfirework.fabric.client.SuperfireworkFabricClient"
+    ]
+  },
+  "mixins": [
+    "superfirework.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "architectury": ">=9.2.14",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

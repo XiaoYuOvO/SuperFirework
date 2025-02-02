@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "net.xiaoyu233.superfirework.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "client.ParticleManagerMixin"
+  ],
+  "mixins": [
+    "CrossbowMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

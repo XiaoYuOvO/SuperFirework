@@ -1,0 +1,12 @@
+accessWidener   v2  named
+accessible method net/minecraft/client/particle/FireworksSparkParticle$Flash <init> (Lnet/minecraft/client/world/ClientWorld;DDD)V
+accessible field net/minecraft/entity/projectile/FireworkRocketEntity SHOT_AT_ANGLE Lnet/minecraft/entity/data/TrackedData;
+accessible field net/minecraft/entity/projectile/FireworkRocketEntity lifeTime I
+accessible method net/minecraft/entity/projectile/FireworkRocketEntity explode ()V
+extendable method net/minecraft/entity/projectile/FireworkRocketEntity explode ()V
+accessible method net/minecraft/entity/projectile/FireworkRocketEntity hasExplosionEffects ()Z
+accessible field net/minecraft/client/particle/AnimatedParticle targetRed F
+accessible field net/minecraft/client/particle/AnimatedParticle targetGreen F
+accessible field net/minecraft/client/particle/AnimatedParticle targetBlue F
+accessible field net/minecraft/client/particle/AnimatedParticle changesColor Z
+accessible field net/minecraft/entity/projectile/FireworkRocketEntity ITEM Lnet/minecraft/entity/data/TrackedData;
