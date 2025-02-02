@@ -1,4 +1,5 @@
 {
   "item.superfirework.super_firework": "超级烟花",
-  "item.superfirework.clone_firework": "子母烟花"
+  "item.superfirework.clone_firework": "子母烟花",
+  "item_group.superfirework.name": "超级烟花"
 }
