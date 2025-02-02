@@ -37,9 +37,9 @@ public abstract class FireworkExplosion {
         explosion.setTrail(particleConfig.trail);
         explosion.setFlicker(particleConfig.flicker);
         explosion.setAlpha(0.99F);
-        explosion.setMaxAge((int) particleConfig.maxAge.sample(random));
+        explosion.setMaxAge(Math.abs((int) particleConfig.maxAge.sample(random)));
         explosion.setColor(Util.getRandom(particleConfig.colors, random));
-        explosion.setGravityStrength((float) particleConfig.gravity.sample(random));
+        explosion.setGravityStrength(Math.abs((float) particleConfig.gravity.sample(random)));
         if (particleConfig.fadeColor.length > 0) {
             explosion.setTargetColor(Util.getRandom(particleConfig.fadeColor, random));
         }
