@@ -1,4 +1,4 @@
-#### For earlier version of this mod, please check the [old version](https://github.com/xiaoyu233/SuperFirework/tree/1.20.1/README_OLD.md)
+#### For earlier version of this mod, please check the [old version](https://github.com/XiaoYuOvO/SuperFirework/blob/1.20.1/README_OLD.md)
 
 ---
 ## What does this mod do
