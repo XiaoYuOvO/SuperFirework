@@ -18,7 +18,13 @@ public final class SuperfireworkFabric implements ModInitializer {
         // Proceed with mild caution.
 
         // Run our common setup.
-        Registry.register(Registries.ITEM_GROUP, Superfirework.id(Superfirework.MOD_ID), FabricItemGroup.builder().displayName(Text.translatable("item_group." + Superfirework.MOD_ID+ ".name")).icon(()-> SFItems.SUPER_FIREWORK.get().getDefaultStack()).entries(SFItems::addCreativeGroupEntries).build());
+        Registry.register(
+                Registries.ITEM_GROUP, Superfirework.id(Superfirework.MOD_ID), FabricItemGroup.builder()
+                        .displayName(Text.translatable("item_group." + Superfirework.MOD_ID + ".name"))
+                        .icon(() -> SFItems.SUPER_FIREWORK.get().getDefaultStack())
+                        .entries(SFItems::addCreativeGroupEntries)
+                        .build()
+        );
         Superfirework.init();
     }
 }

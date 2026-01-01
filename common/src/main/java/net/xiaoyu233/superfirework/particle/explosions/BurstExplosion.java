@@ -1,40 +1,35 @@
 package net.xiaoyu233.superfirework.particle.explosions;
 
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
+import net.xiaoyu233.superfirework.component.explosions.EmptyFireworkComponent;
+import net.xiaoyu233.superfirework.particle.ExplosionType;
 import net.xiaoyu233.superfirework.particle.ParticleConfig;
 
-public class BurstExplosion extends FireworkExplosion{
-    private final double velocityX;
-    private final double velocityZ;
-    private final double velocityY;
+public class BurstExplosion extends SimpleExplosion{
 
-    public BurstExplosion(ParticleManager particleManager, Random random, Vec3d parentVec, double speed, int size, ParticleConfig config, NbtCompound explosionTag) {
-        super(particleManager, random, parentVec, speed, size, config, explosionTag);
-        this.velocityX = parentVec.x;
-        this.velocityZ = parentVec.z;
-        this.velocityY = parentVec.y;
+    public BurstExplosion(ExplosionType<EmptyFireworkComponent, BurstExplosion> type) {
+        super(type);
     }
 
     /**
      * Creates a burst type explosion effect.
      */
-    private void createBurst(double x, double y, double z) {
+    private void createBurst(double speed, int size, double x, double y, double z, ParticleConfig config) {
+        var velocityX = parentVec.x;
+        var velocityZ = parentVec.z;
+        var velocityY = parentVec.y;
         double d0 = this.random.nextGaussian() * 0.05D;
         double d1 = this.random.nextGaussian() * 0.05D;
 
         for (int i = 0; i < 70; ++i) {
-            double d2 = this.velocityX * 0.5D + this.random.nextGaussian() * 0.15D + d0;
-            double d3 = this.velocityZ * 0.5D + this.random.nextGaussian() * 0.15D + d1;
-            double d4 = this.velocityY * 0.5D + this.random.nextDouble() * 0.5D;
-            this.createParticle(x, y, z, d2, d4, d3);
+            double d2 = velocityX * 0.5D + this.random.nextGaussian() * 0.15D + d0;
+            double d3 = velocityZ * 0.5D + this.random.nextGaussian() * 0.15D + d1;
+            double d4 = velocityY * 0.5D + this.random.nextDouble() * 0.5D;
+            this.createParticle(speed, size, x, y, z, d2, d4, d3, config);
         }
     }
 
     @Override
-    public void spawnFireworkParticles(double x, double y, double z) {
-        createBurst(x, y, z);
+    public void spawnExplosionParticles(double speed, int size, double x, double y, double z, ParticleConfig config) {
+        createBurst(speed, size, x, y, z, config);
     }
 }

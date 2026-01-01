@@ -5,7 +5,6 @@ import net.xiaoyu233.superfirework.Superfirework;
 
 public class SFPackets {
     private static final String PROTOCOL_VERSION = "1";
-    public static final NetworkChannel CHANNEL = NetworkChannel.create(Superfirework.id("channel"));
 
     public static void registerPacket() {
 //        CHANNEL.register(SPacketSuperFireworkSpawn.class, SPacketSuperFireworkSpawn::writePacketData, SPacketSuperFireworkSpawn::new, SPacketSuperFireworkSpawn.Handler::onMessage);

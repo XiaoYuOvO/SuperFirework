@@ -1,5 +1,6 @@
 package net.xiaoyu233.superfirework.particle;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -7,19 +8,17 @@ import net.minecraft.client.particle.*;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.Vec3d;
-import net.xiaoyu233.superfirework.util.NbtUtil;
-import org.jetbrains.annotations.Nullable;
+import net.xiaoyu233.superfirework.component.SuperFireworkExplosionComponent;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -118,14 +117,14 @@ public class SuperFireworkParticle extends FireworksSparkParticle {
     }
 
     @Environment(EnvType.CLIENT)
-    public static class ExplosionFactory implements ParticleFactory<DefaultParticleType> {
+    public static class ExplosionFactory implements ParticleFactory<SimpleParticleType> {
         private final SpriteProvider spriteProvider;
 
         public ExplosionFactory(SpriteProvider spriteProvider) {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             SuperFireworkParticle.Explosion explosion = new SuperFireworkParticle.Explosion(clientWorld, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider);
             explosion.setAlpha(0.99F);
             return explosion;
@@ -136,49 +135,38 @@ public class SuperFireworkParticle extends FireworksSparkParticle {
     public static class Starter extends NoRenderParticle {
         private int fireworkAge;
         private final ParticleManager manager;
-        private NbtList fireworkExplosions;
+        private final List<SuperFireworkExplosionComponent> explosions;
         private boolean twinkle;
 
-        public Starter(ClientWorld world, double x, double y, double z, double motionX, double motionY, double motionZ, ParticleManager particleManager, @Nullable NbtCompound fireworkCompound) {
+        public Starter(ClientWorld world, double x, double y, double z, double motionX, double motionY, double motionZ, ParticleManager particleManager, List<SuperFireworkExplosionComponent> fireworkExplosions) {
             super(world, x, y, z);
             this.velocityX = motionX;
             this.velocityY = motionY;
             this.velocityZ = motionZ;
             this.manager = particleManager;
-            this.maxAge = 8;
-            if (fireworkCompound != null) {
-                this.fireworkExplosions = fireworkCompound.getList("Explosions", 10);
-                if (this.fireworkExplosions.isEmpty()) {
-                    this.fireworkExplosions = null;
-                } else {
-                    this.maxAge = this.fireworkExplosions.size() * 2 - 1;
 
-                    for(int i = 0; i < this.fireworkExplosions.size(); ++i) {
-                        NbtCompound compoundnbt = this.fireworkExplosions.getCompound(i);
-                        if (compoundnbt.getBoolean("Flicker")) {
-                            this.twinkle = true;
-                            this.maxAge += 15;
-                            break;
-                        }
+                this.explosions = fireworkExplosions;
+                this.maxAge = fireworkExplosions.size() * 2 - 1;
+
+                for(SuperFireworkExplosionComponent fireworkExplosionComponent : fireworkExplosions) {
+                    if (fireworkExplosionComponent.config().flicker()) {
+                        this.twinkle = true;
+                        this.maxAge += 15;
+                        break;
                     }
                 }
-            }
+
+
 
         }
 
         public void tick() {
-            if (this.fireworkAge == 0 && this.fireworkExplosions != null) {
+            if (this.fireworkAge == 0 && this.explosions != null) {
                 boolean far = this.isFarFromCamera();
-                boolean hasLargeBall;
-                if (this.fireworkExplosions.size() >= 3) {
-                    hasLargeBall = true;
-                } else {
-                    hasLargeBall = this.fireworkExplosions.stream()
-                            .filter(nbtElement -> nbtElement instanceof NbtCompound compound && compound.contains("Type", NbtElement.STRING_TYPE))
-                            .anyMatch(e -> ExplosionTypes.getById(((NbtCompound) e).getString("Type"))
-                                    .map(ExplosionType::largeBallSound)
-                                    .orElse(false));
-                }
+                boolean hasLargeBall = this.explosions.size() >= 3 ||
+                        this.explosions.stream().anyMatch(e -> e.shape()
+                        .getType()
+                        .largeBallSound());
 
                 SoundEvent soundEvent;
                 if (hasLargeBall) {
@@ -190,23 +178,23 @@ public class SuperFireworkParticle extends FireworksSparkParticle {
                 this.world.playSound(this.x, this.y, this.z, soundEvent, SoundCategory.AMBIENT, 20.0F, 0.95F + this.random.nextFloat() * 0.1F, true);
             }
 
-            if (this.fireworkAge % 2 == 0 && this.fireworkExplosions != null && this.fireworkAge / 2 < this.fireworkExplosions.size()) {
+            if (this.fireworkAge % 2 == 0 && this.explosions != null && this.fireworkAge / 2 < this.explosions.size()) {
                 int explosionIndex = this.fireworkAge / 2;
-                NbtCompound explosionCompound = this.fireworkExplosions.getCompound(explosionIndex);
-                Optional<ExplosionType<?>> type = ExplosionTypes.getById(explosionCompound.getString("Type"));
-                int size = NbtUtil.getInt(explosionCompound, "Size").orElse(2);
-                double speed = NbtUtil.getDouble(explosionCompound,"Speed").orElse(2.0d);
-                ParticleConfig particleConfig = new ParticleConfig(explosionCompound, random);
-                type.orElse(ExplosionTypes.BALL)
-                        .create(this.manager, this.random, new Vec3d(this.velocityX, this.velocityY, this.velocityZ), speed, Math.abs(size), particleConfig, explosionCompound)
-                        .spawnFireworkParticles(x, y, z);
-
-                int j = particleConfig.colors[0];
-                float f = (float)((j & 0xff0000) >> 16) / 255.0F;
-                float f1 = (float)((j & 0xff00) >> 8) / 255.0F;
-                float f2 = (float)((j & 0xff)) / 255.0F;
-                Particle particle = this.manager.addParticle(ParticleTypes.FLASH, this.x, this.y, this.z, 0.0D, 0.0D, 0.0D);
-                Objects.requireNonNull(particle).setColor(f, f1, f2);
+                SuperFireworkExplosionComponent explosion = this.explosions.get(explosionIndex);
+                ParticleConfig particleConfig = explosion.config();
+                explosion.shape().doExplosion(manager, random, new Vec3d(this.velocityX, this.velocityY, this.velocityZ), explosion.speed(), explosion.size(), x, y, z, particleConfig);
+                if (explosion.flash()) {
+                    IntList colors = particleConfig.colors();
+                    if (colors.isEmpty()) {
+                        colors = IntList.of(DyeColor.BLACK.getFireworkColor());
+                    }
+                    int j = colors.getInt(0);
+                    float f = (float) ((j & 0xff0000) >> 16) / 255.0F;
+                    float f1 = (float) ((j & 0xff00) >> 8) / 255.0F;
+                    float f2 = (float) ((j & 0xff)) / 255.0F;
+                    Particle particle = this.manager.addParticle(ParticleTypes.FLASH, this.x, this.y, this.z, 0.0D, 0.0D, 0.0D);
+                    Objects.requireNonNull(particle).setColor(f, f1, f2);
+                }
             }
 
             ++this.fireworkAge;

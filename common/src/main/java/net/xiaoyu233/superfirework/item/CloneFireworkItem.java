@@ -1,12 +1,13 @@
 package net.xiaoyu233.superfirework.item;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.xiaoyu233.superfirework.entity.SuperFireworkEntity;
 
 public class CloneFireworkItem extends SuperFireworkItem {
 
-    public CloneFireworkItem(Settings builder) {
+    public CloneFireworkItem(Item.Settings builder) {
         super(builder);
     }
 

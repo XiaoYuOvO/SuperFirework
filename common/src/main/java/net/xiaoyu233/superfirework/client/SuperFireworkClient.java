@@ -27,6 +27,7 @@ public class SuperFireworkClient
     public static void clientInit() {
         SFItems.registerRenders();
         SFPackets.registerPacket();
+        SuperFireworkClient.registerParticle();
         if (MinecraftClient.getInstance().getResourceManager() instanceof ReloadableResourceManagerImpl reloadableResourceManager) {
             reloadableResourceManager.registerReloader(
                     (synchronizer, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor) ->
@@ -41,7 +42,7 @@ public class SuperFireworkClient
     private static void setupMadParticleSupport() {
         if (Platform.isModLoaded("madparticle")) {
             try {
-                Class<?> takeOver = Class.forName("cn.ussshenzhou.madparticle.particle.TakeOver");
+                Class<?> takeOver = Class.forName("cn.ussshenzhou.madparticle.particle.enums.TakeOver");
                 ((HashSet<Class<? extends Particle>>) takeOver.getField("ASYNC_TICK_VANILLA_AND_MADPARTICLE").get(null)).add(SuperFireworkParticle.Explosion.class);
                 Field renderVanillaTransOpaque = takeOver.getDeclaredField("RENDER_VANILLA_TRANS_OPAQUE");
                 renderVanillaTransOpaque.setAccessible(true);

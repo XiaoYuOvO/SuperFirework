@@ -3,7 +3,6 @@ architectury {
 }
 loom {
     accessWidenerPath = file("src/main/resources/${getRootProject().getName()}.accesswidener")
-
 }
 dependencies {
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,

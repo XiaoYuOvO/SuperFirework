@@ -1,5 +1,6 @@
 package net.xiaoyu233.superfirework.util;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.random.Random;
@@ -21,15 +22,15 @@ public class NbtUtil {
         return Optional.empty();
     }
 
-    public static Optional<int[]> getColor(NbtCompound compound, String name){
+    public static Optional<IntList> getColor(NbtCompound compound, String name){
         if (compound.contains(name, NbtElement.INT_ARRAY_TYPE)){
-            return Optional.of(compound.getIntArray(name));
+            return Optional.of(IntList.of(compound.getIntArray(name)));
         }
         return Optional.empty();
     }
 
-    public static int[] ensureColor(int[] color, Random random){
-        if (color.length == 0){
+    public static IntList ensureColor(IntList color, Random random){
+        if (color.isEmpty()){
             return FireworkUtil.getRandomSingleColor(random);
         }
         return color;

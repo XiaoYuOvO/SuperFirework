@@ -1,61 +1,74 @@
 package net.xiaoyu233.superfirework.particle.explosions;
 
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.xiaoyu233.superfirework.particle.ExplosionType;
 import net.xiaoyu233.superfirework.particle.ParticleConfig;
 import net.xiaoyu233.superfirework.particle.SFParticleTypes;
 import net.xiaoyu233.superfirework.particle.SuperFireworkParticle;
 
-public abstract class FireworkExplosion {
-   protected final ParticleManager particleManager;
-   protected final Random random;
-   protected final double speed;
-   protected final int size;
-   protected final ParticleConfig particleConfig;
-   protected final NbtCompound explosionTag;
-   protected final Vec3d parentVec;
+public abstract class FireworkExplosion<C> {
+    public static final Codec<FireworkExplosion<?>> CODEC = ExplosionType.CODEC.dispatch(FireworkExplosion::getType, ExplosionType::getCodec);
+    public static final PacketCodec<ByteBuf,FireworkExplosion<?>> PACKET_CODEC = PacketCodecs.codec(CODEC);
+    protected final ExplosionType<C, ? extends FireworkExplosion<C>> type;
+    protected final C component;
 
-    protected FireworkExplosion(ParticleManager particleManager, Random random, Vec3d parentVec, double speed, int size, ParticleConfig config, NbtCompound explosionTag) {
+    protected ParticleManager particleManager;
+    protected Random random;
+    protected Vec3d parentVec;
+
+    protected FireworkExplosion(ExplosionType<C, ? extends FireworkExplosion<C>> type, C component) {
+        this.type = type;
+        this.component = component;
+    }
+    public void doExplosion(ParticleManager particleManager, Random random, Vec3d parentVec, double speed, int size, double x, double y, double z, ParticleConfig config){
         this.particleManager = particleManager;
         this.random = random;
-        this.speed = speed;
         this.parentVec = parentVec;
-        this.size = size;
-        this.particleConfig = config;
-        this.explosionTag = explosionTag;
+        this.spawnExplosionParticles(speed, size, x, y, z, config);
     }
 
-    public abstract void spawnFireworkParticles(double x, double y, double z);
+    protected abstract void spawnExplosionParticles(double speed, int size, double x, double y, double z, ParticleConfig config);
     /**
      * Creates a single particle.
      */
-    protected SuperFireworkParticle.Explosion createParticle(double x, double y, double z, double motionX, double motionY, double motionZ) {
+    protected SuperFireworkParticle.Explosion createParticle(double speed, int size, double x, double y, double z, double motionX, double motionY, double motionZ,
+                                                             ParticleConfig particleConfig) {
         SuperFireworkParticle.Explosion explosion = (SuperFireworkParticle.Explosion) particleManager.addParticle(SFParticleTypes.SUPER_FIREWORK.get(), x, y, z, motionX, motionY, motionZ);
-        explosion.setTrail(particleConfig.trail);
-        explosion.setFlicker(particleConfig.flicker);
+        explosion.setTrail(particleConfig.trail());
+        explosion.setFlicker(particleConfig.flicker());
         explosion.setAlpha(0.99F);
-        explosion.setMaxAge(Math.abs((int) particleConfig.maxAge.sample(random)));
-        explosion.setColor(Util.getRandom(particleConfig.colors, random));
-        explosion.setGravityStrength(Math.abs((float) particleConfig.gravity.sample(random)));
-        if (particleConfig.fadeColor.length > 0) {
-            explosion.setTargetColor(Util.getRandom(particleConfig.fadeColor, random));
+        explosion.setMaxAge(Math.abs((int) particleConfig.maxAge().sample(random)));
+        explosion.setColor(Util.getRandom(particleConfig.colors(), random));
+        explosion.setGravityStrength(Math.abs((float) particleConfig.gravity().sample(random)));
+        if (!particleConfig.fadeColors().isEmpty()) {
+            explosion.setTargetColor(Util.getRandom(particleConfig.fadeColors(), random));
         }
-        if (particleConfig.explode){
+        if (particleConfig.explode()){
             explosion.onDead((p)-> {
-                this.particleConfig.explode = false;
-                if (particleConfig.fadeColor.length > 0) {
-                    int[] colors = this.particleConfig.colors;
-                    this.particleConfig.colors = particleConfig.fadeColor;
-                    this.particleConfig.fadeColor = colors;
-                }
-                for (int i = 0; i < this.size; i++) {
-                    this.createParticle(p.getX(), p.getY(), p.getZ(), random.nextGaussian() * this.speed * 0.05d + p.getVecX(), random.nextGaussian() * this.speed  * 0.05d + p.getVecY(), random.nextGaussian() * this.speed * 0.05d + p.getVecZ());
+                for (int i = 0; i < size; i++) {
+                    this.createParticle(speed, size, p.getX(), p.getY(), p.getZ(),
+                            random.nextGaussian() * speed * 0.05d + p.getVecX(),
+                            random.nextGaussian() * speed * 0.05d + p.getVecY(),
+                            random.nextGaussian() * speed * 0.05d + p.getVecZ(),
+                            particleConfig.cancelExplodeClone());
                 }
             });
         }
         return explosion;
+    }
+
+    public C getComponent() {
+        return this.component;
+    }
+
+    public ExplosionType<?, ?> getType() {
+        return this.type;
     }
 }

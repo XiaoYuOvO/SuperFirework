@@ -8,6 +8,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.xiaoyu233.superfirework.component.SFComponents;
 import net.xiaoyu233.superfirework.entity.SuperFireworkEntity;
 import net.xiaoyu233.superfirework.util.FireworkUtil;
 
@@ -33,7 +34,7 @@ public class SuperFireworkItem extends FireworkRocketItem {
     }
 
     protected void configureFireworkEntity(ItemUsageContext context, ItemStack itemStack, SuperFireworkEntity fireworkRocketEntity) {
-        if (!itemStack.hasNbt()) {
+        if (itemStack.getComponents().get(SFComponents.SUPER_FIREWORK_COMPONENT.get()).explosions().isEmpty()) {
             fireworkRocketEntity.readCustomDataFromNbt(FireworkUtil.getRandomFireworkTag(context.getWorld().random));
         }
     }

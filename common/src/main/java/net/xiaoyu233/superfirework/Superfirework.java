@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.RegistrarManager;
 import net.minecraft.util.Identifier;
+import net.xiaoyu233.superfirework.component.SFComponents;
 import net.xiaoyu233.superfirework.entity.SFEntityTypes;
 import net.xiaoyu233.superfirework.item.SFItems;
 import net.xiaoyu233.superfirework.particle.SFParticleTypes;
@@ -17,12 +18,13 @@ public final class Superfirework {
     public static final RegistrarManager REGISTRAR_MANAGER = RegistrarManager.get(MOD_ID);
     public static void init() {
         // Write common init code here.
+        SFComponents.registerComponents();
         SFEntityTypes.registerEntities();
         SFItems.registerItems();
         SFParticleTypes.registerParticle();
     }
 
     public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+        return Identifier.of(MOD_ID, path);
     }
 }

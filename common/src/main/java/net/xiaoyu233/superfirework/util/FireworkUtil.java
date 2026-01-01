@@ -1,10 +1,12 @@
 package net.xiaoyu233.superfirework.util;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
+import net.xiaoyu233.superfirework.Superfirework;
 import net.xiaoyu233.superfirework.particle.ExplosionTypes;
 
 public class FireworkUtil {
@@ -12,30 +14,35 @@ public class FireworkUtil {
         NbtCompound fireworkNBT = new NbtCompound();
         fireworkNBT.putInt("LifeTime",30 + rand.nextInt(20));
         NbtCompound fireworksItem = new NbtCompound();
-        fireworksItem.putString("id","firework_rocket");
+        fireworksItem.putString("id", Superfirework.MOD_ID + ":super_firework");
         fireworksItem.putInt("Count",1);
         NbtCompound tag = new NbtCompound();
         NbtCompound fireworks = new NbtCompound();
         NbtList explosions = new NbtList();
         NbtCompound singleExplosions = new NbtCompound();
-        singleExplosions.putInt("Speed", 1 + rand.nextInt(4));
-        singleExplosions.putString("Type", Util.getRandom(ExplosionTypes.NORMAL_EXPLOSION_TYPES, rand).getName());
+        NbtCompound particleConfig = new NbtCompound();
+        singleExplosions.putInt("speed", 1 + rand.nextInt(4));
+        NbtCompound shape = new NbtCompound();
+        shape.putString("type", Util.getRandom(ExplosionTypes.NORMAL_EXPLOSION_TYPES, rand).getName());
+        shape.put("config", new NbtCompound());
+        singleExplosions.put("shape", shape);
         NbtIntArray colors = new NbtIntArray(new int[]{getRandomColor(rand)});
-        singleExplosions.put("Colors",colors);
-        singleExplosions.putBoolean("Explode",rand.nextBoolean());
+        particleConfig.put("colors",colors);
+        particleConfig.putBoolean("explode",rand.nextBoolean());
         boolean trail = rand.nextBoolean();
-        singleExplosions.putBoolean("Trail", trail);
-        int size = rand.nextInt(15);
+        particleConfig.putBoolean("trail", trail);
+        int size = 1 + rand.nextInt(15);
         if (trail) size /= 2;
-        singleExplosions.putInt("Size", size);
+        singleExplosions.putInt("size", size);
         if (rand.nextBoolean()){
             NbtIntArray fadeColors = new NbtIntArray(new int[]{getRandomColor(rand)});
-            singleExplosions.put("FadeColors",fadeColors);
+            particleConfig.put("fade_colors",fadeColors);
         }
+        singleExplosions.put("particle",particleConfig);
         explosions.add(singleExplosions);
-        fireworks.put("Explosions",explosions);
-        tag.put("Fireworks",fireworks);
-        fireworksItem.put("tag",tag);
+        fireworks.put("explosions",explosions);
+        tag.put(Superfirework.MOD_ID + ":super_firework",fireworks);
+        fireworksItem.put("components",tag);
         fireworkNBT.put("FireworksItem",fireworksItem);
         return fireworkNBT;
     }
@@ -47,7 +54,7 @@ public class FireworkUtil {
         return (r << 16) + (g << 8) + b;
     }
 
-    public static int[] getRandomSingleColor(Random random){
-        return new int[]{getRandomColor(random)};
+    public static IntList getRandomSingleColor(Random random){
+        return IntList.of(getRandomColor(random));
     }
 }

@@ -5,6 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -15,8 +18,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.xiaoyu233.superfirework.component.SFComponents;
+import net.xiaoyu233.superfirework.component.SuperFireworkComponent;
 import net.xiaoyu233.superfirework.particle.SuperFireworkParticle;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class SuperFireworkEntity extends FireworkRocketEntity{
     private static final TrackedData<Boolean> CLONE = DataTracker.registerData(SuperFireworkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -28,9 +35,10 @@ public class SuperFireworkEntity extends FireworkRocketEntity{
         super(SFEntityTypes.SUPER_FIREWORK.get(), world);
         this.setPosition(x, y, z);
         int i = 1;
-        if (!stack.isEmpty() && stack.hasNbt()) {
-            this.dataTracker.set(ITEM, stack.copy());
-            i += stack.getOrCreateSubNbt("Fireworks").getByte("Flight");
+        this.dataTracker.set(ITEM, stack.copy());
+        SuperFireworkComponent fireworksComponent = stack.get(SFComponents.SUPER_FIREWORK_COMPONENT.get());
+        if (fireworksComponent != null) {
+            i += fireworksComponent.flightDuration();
         }
 
         this.setVelocity(this.random.nextTriangular((double)0.0F, 0.002297), 0.05, this.random.nextTriangular((double)0.0F, 0.002297));
@@ -52,10 +60,10 @@ public class SuperFireworkEntity extends FireworkRocketEntity{
                 }
             } else {
                 ItemStack itemStack = this.getStack();
-                NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
+                var component = itemStack.isEmpty() ? null : itemStack.getComponents().get(SFComponents.SUPER_FIREWORK_COMPONENT.get());
                 Vec3d velocity = this.getVelocity();
                 ParticleManager particleManager = MinecraftClient.getInstance().particleManager;
-                particleManager.addParticle(new SuperFireworkParticle.Starter((ClientWorld) this.getWorld(), this.getX(), this.getY(), this.getZ(), velocity.x, velocity.y, velocity.z, particleManager, nbtCompound));
+                particleManager.addParticle(new SuperFireworkParticle.Starter((ClientWorld) this.getWorld(), this.getX(), this.getY(), this.getZ(), velocity.x, velocity.y, velocity.z, particleManager, component.explosions()));
             }
             return;
         }
@@ -63,9 +71,15 @@ public class SuperFireworkEntity extends FireworkRocketEntity{
         super.handleStatus(id);
     }
 
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(CLONE,false);
+    @Override
+    protected List<FireworkExplosionComponent> getExplosions() {
+        //DUMMY EXPLOSION
+        return List.of(FireworkExplosionComponent.DEFAULT);
+    }
+
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(CLONE,false);
     }
 
     @Override

@@ -1,56 +1,38 @@
 package net.xiaoyu233.superfirework.particle.explosions;
 
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
+import net.xiaoyu233.superfirework.component.explosions.ImageComponent;
+import net.xiaoyu233.superfirework.particle.ExplosionType;
 import net.xiaoyu233.superfirework.particle.ParticleConfig;
 import net.xiaoyu233.superfirework.util.Bitmap;
 
 import java.awt.image.BufferedImage;
 
-public class ImageExplosion extends FireworkExplosion{
-    private final String name;
-    private final double zoom;
-    private final double imageRotation;
-
-    public ImageExplosion(ParticleManager particleManager, Random random, Vec3d parentVec, double speed, int size, ParticleConfig config, NbtCompound explosionTag) {
-        super(particleManager, random, parentVec, speed, size, config, explosionTag);
-        if (explosionTag.contains("Zoom", NbtElement.DOUBLE_TYPE)){
-            zoom = MathHelper.clamp(0,explosionTag.getDouble("Zoom"),10);
-        }else {
-            this.zoom = 1;
-        }
-        if (explosionTag.contains("Rotation", NbtElement.DOUBLE_TYPE)){
-            imageRotation = explosionTag.getDouble("Rotation");
-        }else {
-            this.imageRotation = 0;
-        }
-        if (explosionTag.contains("Name", NbtElement.STRING_TYPE)){
-            this.name = explosionTag.getString("Name").toLowerCase();
-        }else this.name = "-";
+public class ImageExplosion extends FireworkExplosion<ImageComponent>{
+    public ImageExplosion(ExplosionType<ImageComponent, ? extends FireworkExplosion<ImageComponent>> type, ImageComponent component) {
+        super(type, component);
     }
 
     @Override
-    public void spawnFireworkParticles(double x, double y, double z) {
-        createImage(x, y, z);
+    public void spawnExplosionParticles(double speed, int size, double x, double y, double z, ParticleConfig config) {
+        createImage(speed, size, x, y, z, config);
     }
 
-    private void createImage(double x, double y, double z){
-        BufferedImage image = Bitmap.loadImage(name);
+    private void createImage(double speed, int size, double x, double y, double z, ParticleConfig config){
+        BufferedImage image = Bitmap.loadImage(this.component.name());
         int width = image.getWidth();
         int height = image.getHeight();
-        if (zoom != 1){
-            width = (int) (width * zoom);
-            height = (int) (height * zoom);
+        if (this.component.zoom() != 1){
+            width = (int) (width * this.component.zoom());
+            height = (int) (height * this.component.zoom());
             image = Bitmap.zoomInImage(image,width,height);
         }
-        int[] color = new int[1];
-        particleConfig.colors = color;
-        particleConfig.fadeColor = new int[0];
-        double radRotation = Math.toRadians(imageRotation) - Math.PI/2;
+        IntArrayList color = new IntArrayList(1);
+        color.add(0);
+        config = config.withColorsClone(color, IntList.of());
+        double radRotation = Math.toRadians(this.component.imageRotation()) - Math.PI/2;
         double yStep = speed * 2  / height;
         double xStep = speed * 2  / width;
         double vecX = speed;
@@ -59,8 +41,8 @@ public class ImageExplosion extends FireworkExplosion{
             for (int hIndex = 0; hIndex < height; hIndex++) {
                 int rgb = image.getRGB(wIndex, hIndex);
                 if (rgb != 0){
-                    color[0] = rgb;
-                    this.createParticle(x, y, z, vecX, vecY, vecX* MathHelper.cos((float) radRotation));
+                    color.set(0, rgb);
+                    this.createParticle(speed, size, x, y, z, vecX, vecY, vecX* MathHelper.cos((float) radRotation), config);
                 }
                 vecY-=yStep;
 

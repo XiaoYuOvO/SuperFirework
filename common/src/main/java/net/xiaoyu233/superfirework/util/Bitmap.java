@@ -35,10 +35,10 @@ public class Bitmap {
         if (fontCache.containsKey(fontKey)){
             font = (fontCache.get(fontKey));
         } else {
-            if (Identifier.isValid(fontName.toLowerCase())) {
+            if (Identifier.isPathValid(fontName.toLowerCase())) {
                 font = MinecraftClient.getInstance()
                         .getResourceManager()
-                        .getResource(new Identifier(Superfirework.MOD_ID, "fonts/" + fontName.toLowerCase() + ".ttf"))
+                        .getResource(Identifier.of(Superfirework.MOD_ID, "fonts/" + fontName.toLowerCase() + ".ttf"))
                         .map(resource -> {
                             try {
                                 return getSelfDefinedFont(resource.getInputStream(), fontSize);
@@ -75,7 +75,7 @@ public class Bitmap {
     }
 
     public static BufferedImage loadImage(String name){
-        Identifier imageLocation = new Identifier(name);
+        Identifier imageLocation = Identifier.of(name);
         if (imgCache.containsKey(imageLocation)){
             return imgCache.get(imageLocation);
         }
@@ -101,7 +101,7 @@ public class Bitmap {
         if (resizeCache.containsKey(resizeConfig)){
             return resizeCache.get(resizeConfig);
         }
-        BufferedImage newImage = new BufferedImage(maxWidth, maxHeight, originalImage.getType());
+        BufferedImage newImage = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics g = newImage.getGraphics();
         g.drawImage(originalImage, 0, 0, maxWidth, maxHeight, null);
         g.dispose();

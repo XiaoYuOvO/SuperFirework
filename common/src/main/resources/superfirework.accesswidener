@@ -10,3 +10,5 @@ accessible field net/minecraft/client/particle/AnimatedParticle targetGreen F
 accessible field net/minecraft/client/particle/AnimatedParticle targetBlue F
 accessible field net/minecraft/client/particle/AnimatedParticle changesColor Z
 accessible field net/minecraft/entity/projectile/FireworkRocketEntity ITEM Lnet/minecraft/entity/data/TrackedData;
+
+extendable method net/minecraft/entity/projectile/FireworkRocketEntity getExplosions ()Ljava/util/List;
