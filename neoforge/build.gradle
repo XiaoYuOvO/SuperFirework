@@ -4,7 +4,9 @@ plugins {
 
 architectury {
     platformSetupLoomIde()
-    neoForge()
+    neoForge {
+        platformPackage = "forge"
+    }
 }
 
 configurations {
@@ -26,6 +28,9 @@ configurations {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
+    neoForge {
+        accessWidenerPath = project(":common").loom.accessWidenerPath
+    }
 }
 
 repositories {
@@ -70,4 +75,5 @@ shadowJar {
 
 remapJar {
     input.set shadowJar.archiveFile
+    atAccessWideners.add "superfirework.accesswidener"
 }
